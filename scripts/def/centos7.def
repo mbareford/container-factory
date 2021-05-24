@@ -1,0 +1,10 @@
+BootStrap: docker
+From: centos:centos7
+
+%post
+    yum update -y
+    yum install environment-modules -y
+    echo 'module() { eval `/usr/bin/modulecmd bash $*`; }' >> /etc/bashrc
+    yum install wget -y
+    yum install which -y
+    yum install squashfs-tools -y

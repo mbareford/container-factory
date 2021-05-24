@@ -1,0 +1,27 @@
+heat_template_version: 2015-04-30
+
+description: Quickly create a Ubuntu VM and give it an IP address
+
+resources:
+  my_instance:
+    type: OS::Nova::Server
+    properties:
+      key_name: EPCC-ContainerFactoryKey
+      image: Ubuntu 18.04
+      flavor: m1.xlarge
+      networks:
+        - network: VM Network Private
+  my_ip:
+    type: OS::Nova::FloatingIP
+    properties:
+      pool: Floating Network Private (UoE access only)
+  assoc:
+    type: OS::Nova::FloatingIPAssociation
+    properties:
+      floating_ip: { get_resource: my_ip }
+      server_id: { get_resource: my_instance }
+
+outputs:
+  instance_ip:
+    description: IP address of the instance
+    value: { get_attr: [my_ip, ip] }

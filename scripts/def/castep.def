@@ -1,0 +1,56 @@
+Bootstrap: library
+From: ubuntu:20.04
+
+%setup
+    # empty
+
+%files
+    /home/ubuntu/work/scripts/post_start.sh /opt/
+    /home/ubuntu/work/scripts/post_stop.sh /opt/
+    /home/ubuntu/work/builds/castep/scripts.tar.gz /opt/
+    /home/ubuntu/arc/app/castep-20.1.1.tar.gz /opt/
+
+%environment
+    # empty
+
+%post
+    . /opt/post_start.sh
+
+    ubuntu-20.04.sh 9
+
+    miniconda.sh 3 4.8.3 38
+    conda_install.sh numpy,scipy,matplotlib
+
+    source.sh castep 20.1.1
+
+    . /opt/post_stop.sh
+
+%runscript
+    # empty
+
+%startscript
+    # empty
+
+%test
+    ROOT=/opt/scripts
+    export PATH=${ROOT}/chk:${ROOT}/aux:${ROOT}/os:${ROOT}/cmp:${PATH}
+    check_os.sh "Ubuntu 20.04"
+    check_gcc.sh "9.3.0"
+    check_cmp.sh ${MINICONDA3_ROOT} ${MINICONDA3_NAME}
+    check_cmp.sh ${CMAKE_ROOT} ${CMAKE_NAME}
+
+%labels
+    Author Michael Bareford
+    Email m.bareford@epcc.ed.ac.uk
+    Version v1.0.0
+
+%help
+    This CASTEP (http://www.castep.org/) container image files was created at the EPCC Container Factory,
+    an OpenStack Ubuntu 20.04 instance (ID 859596f3-6683-4951-82d4-f9e080c30d1f) hosted by the University of Edinburgh Eleanor Research Cloud.
+
+    The container is based on Ubuntu 20.04 and features GCC 9.3.0, Miniconda3 4.8.3 and the CASTEP source code version 20.1.1.
+    See the container creation log at "/opt/logs/create.log.0" and the original definition file at "/opt/scripts/def/castep.def".
+
+    Submission script templates can be found under "/opt/scripts/app/castep/host/".
+    These script files are named "submit.sh" and are organised by "<host name>/<MPI library>/<compiler>".
+
