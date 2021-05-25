@@ -44,11 +44,14 @@ unset CPU
 mkdir -p ${INSTALL_ROOT}
 cd ${BUILD_ROOT}
 
+
 # compile and install
-FC=gfortran CC=gcc make CASTEP_ARCH=${ARCH_LABEL}
-make INSTALL_DIR=${INSTALL_ROOT} install
+. ${MINICONDA_ROOT}/activate.sh
+FC=gfortran CC=gcc make CASTEP_ARCH=${ARCH_LABEL} &> ${MAKE_LOG}
+make INSTALL_DIR=${INSTALL_ROOT} install &>> ${MAKE_LOG}
 make CASTEP_ARCH=${ARCH_LABEL} clean
 rm -rf ${BUILD_ROOT}/obj/${ARCH_LABEL%?}--*
+conda deactivate
 
 
 # record
