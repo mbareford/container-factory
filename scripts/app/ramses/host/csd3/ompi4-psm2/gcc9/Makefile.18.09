@@ -30,7 +30,7 @@ endif
 #############################################################################
 # Fortran compiler options and directives
 
-MPI_ROOT = /usr/local/software/spack/spack-git/opt/spack/linux-rhel7-broadwell/gcc-5.4/openmpi-4.0.5-th76hhepc67bqo77a4idpcc7oj2mvjgi
+MPI_ROOT = /usr/local/Cluster-Apps/openmpi/gcc/9.3/4.0.4
 
 F90 = gfortran -Wall -O3 -I$(MPI_ROOT)/include -I$(MPI_ROOT)/lib
 FFLAGS = -fbacktrace -ffpe-trap=invalid,overflow,zero -frecord-marker=4 -ffree-line-length-none -x f95-cpp-input $(DEFINES)

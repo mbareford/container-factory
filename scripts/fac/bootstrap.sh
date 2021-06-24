@@ -32,7 +32,7 @@ mkdir -p ${HOME}/singularity
 mkdir -p ${HOME}/arc/singularity
 cd ${HOME}/singularity
 rm -rf ${SINGULARITY_VERSION}
-wget https://github.com/sylabs/singularity/archive/v${SINGULARITY_VERSION}.tar.gz
+wget https://github.com/sylabs/singularity/archive/refs/tags/v${SINGULARITY_VERSION}.tar.gz
 mv v${SINGULARITY_VERSION}.tar.gz ${HOME}/arc/singularity/singularity-${SINGULARITY_VERSION}.tar.gz
 tar -xzf ${HOME}/arc/singularity/singularity-${SINGULARITY_VERSION}.tar.gz
 mv singularity-${SINGULARITY_VERSION} ${SINGULARITY_VERSION}

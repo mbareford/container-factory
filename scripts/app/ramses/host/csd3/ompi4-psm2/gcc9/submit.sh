@@ -16,8 +16,8 @@
 # load module environment
 module purge
 module load slurm
-module load openmpi-4.0.5-gcc-5.4-th76hhe
-module load gcc/7
+module load openmpi/gcc/9.3/4.0.4
+module load gcc/9
 
 
 # setup resource-related environment
@@ -32,7 +32,7 @@ APP_NAME=ramses
 APP_VERSION=19.10
 APP_HOST=csd3
 APP_MPI_LABEL=ompi4-psm2
-APP_COMPILER_LABEL=gcc7
+APP_COMPILER_LABEL=gcc9
 APP_EXE_NAME=${APP_NAME}3d
 APP_EXE=/opt/app/${APP_NAME}/${APP_VERSION}/${APP_HOST}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/bin/${APP_EXE_NAME}
 APP_RUN_PATH=</path/to/run/dir>
@@ -54,17 +54,15 @@ chmod a+r ${APP_RUN_PATH}/hosts
 SINGULARITY_PATH=/usr/bin/singularity
 CONTAINER_PATH=</path/to/container/image/file>
 
+# setup singularity bindpaths
 APP_SCRIPTS_ROOT=/opt/scripts/app/${APP_NAME}/host/${APP_HOST}
 BIND_ARGS=`singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/bindpaths.lst`
 BIND_ARGS=${BIND_ARGS},</path/to/input/data>
-singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/env.sh > ${APP_RUN_PATH}/env.sh
 
-# the --env-file option is not supported by Singularity 3.5.3 use SINGULARITYENV instead
+# setup singularity environment
+singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/env.sh > ${APP_RUN_PATH}/env.sh
 SINGULARITY_OPTS="exec --bind ${BIND_ARGS} --env-file ${APP_RUN_PATH}/env.sh"
-#while read ev; do
-#  export SINGULARITYENV_${ev}
-#done < ${APP_RUN_PATH}/env.sh
-#SINGULARITY_OPTS="exec --bind ${BIND_ARGS}"
+
 
 # launch containerised app
 RUN_START=$(date +%s.%N)

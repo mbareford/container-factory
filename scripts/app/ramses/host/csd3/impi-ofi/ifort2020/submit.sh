@@ -24,6 +24,7 @@ NCORESPN=${SLURM_CPUS_ON_NODE}
 NCORES=`expr ${NNODES} \* ${NCORESPN}`
 export OMP_NUM_THREADS=1
 
+
 # setup app-related environment
 # <add test case specific variables here>
 APP_NAME=ramses
@@ -47,28 +48,25 @@ mkdir -p ${APP_RUN_PATH}
 scontrol show hostnames > ${APP_RUN_PATH}/hosts
 chmod a+r ${APP_RUN_PATH}/hosts
 
-
 # setup singularity and container paths
 SINGULARITY_PATH=/usr/bin/singularity
 CONTAINER_PATH=</path/to/container/image/file>
 
+# setup singularity bindpaths
 APP_SCRIPTS_ROOT=/opt/scripts/app/${APP_NAME}/host/${APP_HOST}
 BIND_ARGS=`singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/bindpaths.lst`
-BIND_ARGS=${BIND_ARGS},/var/spool/slurmd/mpi_cray_shasta,</path/to/input/data>
-singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/env.sh > ${APP_RUN_PATH}/env.sh
+BIND_ARGS=${BIND_ARGS},</path/to/input/data>
 
-# the --env-file option is not supported by Singularity 3.5.3 use SINGULARITYENV instead
+# setup singularity environment
+singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/env.sh > ${APP_RUN_PATH}/env.sh
 SINGULARITY_OPTS="exec --bind ${BIND_ARGS} --env-file ${APP_RUN_PATH}/env.sh"
-#while read ev; do
-#  export SINGULARITYENV_${ev}
-#done < ${APP_RUN_PATH}/env.sh
-SINGULARITY_OPTS="exec --bind ${BIND_ARGS}"
+
 
 # launch containerised app
 RUN_START=$(date +%s.%N)
 echo -e "Launching ${APP_EXE_NAME} (<insert further description>) over ${NNODES} node(s) from within Singularity container.\n" > ${APP_OUTPUT}
 
-mpirun -n ${NCORES} -ppn ${NCORESPN} -wdir ${APP_RUN_PATH} -f ${APP_RUN_PATH}/hosts ${SINGULARITY_PATH} ${SINGULARITY_OPTS} ${CONTAINER_PATH} ${APP_EXE} ${APP_PARAMS} &>> ${APP_OUTPUT}
+mpirun -n ${NCORES} -wdir ${APP_RUN_PATH} -f ${APP_RUN_PATH}/hosts ${SINGULARITY_PATH} ${SINGULARITY_OPTS} ${CONTAINER_PATH} ${APP_EXE} ${APP_PARAMS} &>> ${APP_OUTPUT}
 
 RUN_STOP=$(date +%s.%N)
 RUN_TIME=$(echo "${RUN_STOP} - ${RUN_START}" | bc)
