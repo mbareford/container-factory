@@ -1,11 +1,11 @@
 #!/bin/bash 
 
 SIF=$1
-NAME=$2
-EXT=$3
+APP=$2
+HOST=$3
 
 singularity build --sandbox ${SIF}.sandbox ${SIF}
-singularity exec --writable ${SIF}.sandbox /opt/scripts/aux/add_log.sh /opt/logs ${NAME} ${EXT}
+singularity exec --writable ${SIF}.sandbox /opt/scripts/aux/add_dirs.sh ${APP} ${HOST}
 singularity build --force ${SIF} ${SIF}.sandbox
 
 rm -rf ${SIF}.sandbox

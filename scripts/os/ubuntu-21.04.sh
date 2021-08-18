@@ -1,20 +1,20 @@
 #!/bin/bash
 
 
-echo "deb http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list
-echo "deb-src http://archive.ubuntu.com/ubuntu/ focal main restricted universe multiverse" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu/ hirsute main restricted universe multiverse" > /etc/apt/sources.list
+echo "deb-src http://archive.ubuntu.com/ubuntu/ hirsute main restricted universe multiverse" >> /etc/apt/sources.list
 
-echo "deb http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list
-echo "deb-src http://archive.ubuntu.com/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu/ hirsute-updates main restricted universe multiverse" >> /etc/apt/sources.list
+echo "deb-src http://archive.ubuntu.com/ubuntu/ hirsute-updates main restricted universe multiverse" >> /etc/apt/sources.list
 
-echo "deb http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
-echo "deb-src http://archive.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu/ hirsute-security main restricted universe multiverse" >> /etc/apt/sources.list
+echo "deb-src http://archive.ubuntu.com/ubuntu/ hirsute-security main restricted universe multiverse" >> /etc/apt/sources.list
 
-echo "deb http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list
-echo "deb-src http://archive.ubuntu.com/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list
+echo "deb http://archive.ubuntu.com/ubuntu/ hirsute-backports main restricted universe multiverse" >> /etc/apt/sources.list
+echo "deb-src http://archive.ubuntu.com/ubuntu/ hirsute-backports main restricted universe multiverse" >> /etc/apt/sources.list
 
-echo "deb http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list
-echo "deb-src http://archive.canonical.com/ubuntu focal partner" >> /etc/apt/sources.list
+echo "deb http://archive.canonical.com/ubuntu hirsute partner" >> /etc/apt/sources.list
+echo "deb-src http://archive.canonical.com/ubuntu hirsute partner" >> /etc/apt/sources.list
 
 
 apt-get -y update
@@ -27,10 +27,10 @@ apt-get -y install build-essential \
                    libssl-dev \
                    libseccomp-dev \
                    libgpgme-dev \
-                   zlib1g-dev \
+		   zlib1g-dev \
                    iputils-ping \
                    squashfs-tools \
-                   m4 \
+		   m4 \
                    lzip \
                    liblz4-1 \
                    wget \
@@ -45,7 +45,7 @@ apt-get -y install build-essential \
                    autoconf \
                    autogen \
                    libtool \
-                   environment-modules
+		   environment-modules
 
 
 apt-get -y update

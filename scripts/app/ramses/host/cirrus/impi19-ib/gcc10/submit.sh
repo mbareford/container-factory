@@ -4,8 +4,9 @@
 #SBATCH -o /dev/null
 #SBATCH -e /dev/null
 #SBATCH --time=<wall time>
+#SBATCH --exclusive
 #SBATCH --nodes=<node count>
-#SBATCH --tasks-per-node=128
+#SBATCH --tasks-per-node=36
 #SBATCH --cpus-per-task=1
 #SBATCH --account=<account code>
 #SBATCH --partition=<partition>
@@ -14,8 +15,9 @@
 
 
 # load module environment
-module -s restore /etc/cray-pe.d/PrgEnv-gnu
-module -s load openmpi/4.1.0-ofi-gcc10
+module load gcc/8.2.0
+module load intel-mpi-19/19.0.0.117
+module load singularity/3.7.2
 
 
 # setup resource-related environment
@@ -29,8 +31,8 @@ export OMP_NUM_THREADS=1
 # <add test case specific variables here>
 APP_NAME=ramses
 APP_VERSION=19.10
-APP_HOST=archer2
-APP_MPI_LABEL=ompi4-ofi
+APP_HOST=cirrus
+APP_MPI_LABEL=impi19-ib
 APP_COMPILER_LABEL=gcc10
 APP_EXE_NAME=${APP_NAME}3d
 APP_EXE=/opt/app/${APP_NAME}/${APP_VERSION}/${APP_HOST}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/bin/${APP_EXE_NAME}
@@ -51,13 +53,13 @@ chmod a+r ${APP_RUN_PATH}/hosts
 
 
 # setup singularity and container paths
-SINGULARITY_PATH=/usr/bin/singularity
+SINGULARITY_PATH=/opt/singularity/3.7.2/bin/singularity
 CONTAINER_PATH=</path/to/container/image/file>
 
 # setup singularity bindpaths
 APP_SCRIPTS_ROOT=/opt/scripts/app/${APP_NAME}/host/${APP_HOST}
 BIND_ARGS=`singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/bindpaths.lst`
-BIND_ARGS=${BIND_ARGS},/var/spool/slurmd/mpi_cray_shasta,</path/to/input/data>
+BIND_ARGS=${BIND_ARGS},</path/to/input/data>
 SINGULARITY_OPTS="exec --bind ${BIND_ARGS}"
 
 # setup singularity environment
@@ -70,11 +72,11 @@ sed -i -e 's/LD_LIBRARY_PATH/export SINGULARITYENV_LD_LIBRARY_PATH/g' ${APP_RUN_
 RUN_START=$(date +%s.%N)
 echo -e "Launching ${APP_EXE_NAME} (<insert further description>) over ${NNODES} node(s) from within Singularity container.\n" > ${APP_OUTPUT}
 
-mpirun -n ${NCORES} -N ${NCORESPN} -wdir ${APP_RUN_PATH} --hostfile ${APP_RUN_PATH}/hosts ${SINGULARITY_PATH} ${SINGULARITY_OPTS} ${CONTAINER_PATH} ${APP_EXE} ${APP_PARAMS} &>> ${APP_OUTPUT}
+mpirun -n ${NCORES} -wdir ${APP_RUN_PATH} --hostfile ${APP_RUN_PATH}/hosts ${SINGULARITY_PATH} ${SINGULARITY_OPTS} ${CONTAINER_PATH} ${APP_EXE} ${APP_PARAMS} &>> ${APP_OUTPUT}
 
 RUN_STOP=$(date +%s.%N)
 RUN_TIME=$(echo "${RUN_STOP} - ${RUN_START}" | bc)
-echo -e "\nsrun time: ${RUN_TIME}" >> ${APP_OUTPUT}
+echo -e "\nmpirun time: ${RUN_TIME}" >> ${APP_OUTPUT}
 
 
 # tidy up

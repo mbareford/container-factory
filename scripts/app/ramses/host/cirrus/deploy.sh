@@ -1,8 +1,10 @@
 #!/bin/bash
-  
+
+module load singularity/3.7.2
+
 APP=$1
 SIF=$2
-HOST=archer2
+HOST=cirrus
 BUILD_ARGS="${HOST} $3"
 BIND_ARGS=`singularity exec ${SIF} cat /opt/scripts/app/${APP}/host/${HOST}/bindpaths.lst`
 
