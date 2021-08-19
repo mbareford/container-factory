@@ -3,14 +3,14 @@
 #SBATCH -J sc_gromacs
 #SBATCH -o /dev/null
 #SBATCH -e /dev/null
-#SBATCH --time=02:00:00
+#SBATCH --time=<wall time>
 #SBATCH --exclusive
-#SBATCH --nodes=1
+#SBATCH --nodes=<node count>
 #SBATCH --tasks-per-node=128
 #SBATCH --cpus-per-task=1
-#SBATCH --account=z19
-#SBATCH --partition=standard
-#SBATCH --qos=standard
+#SBATCH --account=<account code>
+#SBATCH --partition=<partition>
+#SBATCH --qos=<qos>
 #SBATCH --export=none
 
 
