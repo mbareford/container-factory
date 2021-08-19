@@ -12,7 +12,7 @@ get_latest_suffix ${IMG_PATH} ${APP}
 next_suffix=`expr ${suffix} + 1`
 
 if [ -f ${SCRIPTS_ROOT}/app/${APP}/host/${HOST}/mkdirs.sh ]; then
-  echo "Creating host-specific folders within container in preparation for targeting..."
+  echo "Creating host-specific folders within ${APP} container in preparation for targeting ${HOST}..."
   cp ${IMG_PATH}/${APP}.sif.${suffix} ${IMG_PATH}/${APP}.sif.${next_suffix}
   ${SCRIPTS_SNG}/add_dirs.sh ${IMG_PATH}/${APP}.sif.${next_suffix} ${APP} ${HOST}
   echo ""

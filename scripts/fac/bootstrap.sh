@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# bootstrap.sh 3.8.1 1.16.5
+# bootstrap.sh 3.8.1 1.17
 
 
 sudo apt-get -y update
@@ -45,3 +45,8 @@ sudo make -C builddir install
 
 sudo apt-get -y upgrade
 sudo apt-get -y dist-upgrade
+
+
+cd ${HOME}
+git clone https://github.com/mbareford/container-factory.git
+mv container-factory work

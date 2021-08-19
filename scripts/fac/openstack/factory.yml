@@ -7,7 +7,7 @@ resources:
     type: OS::Nova::Server
     properties:
       key_name: EPCC-ContainerFactoryKey
-      image: Ubuntu 18.04
+      image: Ubuntu 20.04
       flavor: m1.xlarge
       networks:
         - network: VM Network Private

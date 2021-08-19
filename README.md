@@ -10,3 +10,10 @@ The sandbox is then converted to a new Singularity image file (SIF) for factory 
 
 The **scripts** folder stores a library of bash scripts some of which are called from Singularity container
 definition files as part of the initial create, whereas, other scripts are called during the targeting process.
+
+
+The container factory itself exists as a machine instance within the UoE Eleanor Research Cloud. The instructions
+for creating this factory instance can be found in [/scripts/fac/openstack/readme.txt](/scripts/fac/openstack/readme.txt).
+
+After the cloud instance has been created, the factory is further configured according to [/scripts/fac/bootstrap.sh](/scripts/fac/bootstrap.sh).
+The bootstrap script installs Sylabs SingularityCE and finishes by cloning this github repo into the factory.
