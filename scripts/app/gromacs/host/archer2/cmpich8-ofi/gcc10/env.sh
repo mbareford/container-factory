@@ -1,4 +1,6 @@
 MPI_ROOT=/opt/cray/pe/mpich/8.0.16/ofi/gnu/9.1
+MPI_C_LIB=mpi
+MPI_CXX_LIB=mpi
 LIBSCI_ROOT=/opt/cray/pe/libsci/20.10.1.2/GNU/9.1/x86_64
 FFTW_ROOT=/opt/cray/pe/fftw/3.3.8.8/x86_rome
 BLAS_LIBRARIES=${LIBSCI_ROOT}/lib/libsci_gnu_82_mpi_mp.so

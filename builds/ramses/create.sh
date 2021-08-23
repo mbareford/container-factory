@@ -53,7 +53,7 @@ echo ""
 
 echo "Creating ${APP} singularity image file..."
 
-${SCRIPTS_SNG}/create.sh ${SCRIPTS_DEF}/${APP}.def ${PWD}/${APP}.sif.0 &> create.log
+sudo singularity build ${PWD}/${APP}.sif.0 ${SCRIPTS_DEF}/${APP}.def &> create.log
 
 echo ""
 

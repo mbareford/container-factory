@@ -21,7 +21,6 @@ scp ${IMG_PATH}/${APP}.sif.${suffix} ${HOST}:${DEPLOY_PATH}/${APP}.sif
 echo ""
 
 echo "Running the deployment script that builds a containerized ${APP} app on the ${HOST} host..."
-echo ""
 ssh ${HOST} "bash -ls" < ${DEPLOY_SCRIPT} ${DEPLOY_ARGS}
 echo ""
 

@@ -24,6 +24,7 @@ cp ${SCRIPTS_ROOT}/aux/install_cmp.sh ./scripts/aux/
 cp ${SCRIPTS_ROOT}/aux/setup_env.sh ./scripts/aux/
 cp ${SCRIPTS_ROOT}/aux/update_env.sh ./scripts/aux/
 cp ${SCRIPTS_ROOT}/aux/add_log.sh ./scripts/aux/
+cp ${SCRIPTS_ROOT}/aux/add_dirs.sh ./scripts/aux/
 
 mkdir -p ./scripts/chk
 cp ${SCRIPTS_ROOT}/chk/check_os.sh ./scripts/chk/
@@ -53,7 +54,7 @@ echo ""
 
 echo "Creating ${APP} singularity image file..."
 
-${SCRIPTS_SNG}/create.sh ${SCRIPTS_DEF}/${APP}.def ${PWD}/${APP}.sif.0 &> create.log
+sudo singularity build ${PWD}/${APP}.sif.0 ${SCRIPTS_DEF}/${APP}.def &> create.log
 
 echo ""
 
