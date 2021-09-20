@@ -54,6 +54,8 @@ if [[ ${MPI_LABEL} == *"cuda"* ]]; then
     sed -i "/${UNSET_CMD}/d" ${FIND_CUDA_FILE}
   fi
 
+  export FLAGS="${FLAGS} -I${MATHLIB}/targets/x86_64-linux/include"
+
   LD_PRELOAD=${CMAKE_PRELOAD} cmake ${BUILD_ROOT} \
     -DGMX_MPI=ON -DGMX_OPENMP=ON -DGMX_HWLOC=OFF -DGMX_GPU=CUDA \
     -DGMX_X11=OFF -DGMX_DOUBLE=OFF -DGMX_BUILD_MDRUN_ONLY=ON -DGMX_BUILD_OWN_FFTW=ON \
