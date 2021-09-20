@@ -68,7 +68,7 @@ sed -i -e 's/LD_LIBRARY_PATH/export SINGULARITYENV_LD_LIBRARY_PATH/g' ${APP_RUN_
 
 # launch containerised app
 RUN_START=$(date +%s.%N)
-echo -e "Launching ${APP_EXE_NAME} (<insert further description>) over ${NNODES} node(s) from within Singularity container.\n" > ${APP_OUTPUT}
+echo -e "Launching ${APP_EXE_NAME} (<insert further description>) over ${NNODES} node(s) from within Singularity container(s).\n" > ${APP_OUTPUT}
 
 srun --distribution=block:block --hint=nomultithread --chdir=${APP_RUN_PATH} ${SINGULARITY_PATH} ${SINGULARITY_OPTS} ${CONTAINER_PATH} ${APP_EXE} ${APP_PARAMS} &>> ${APP_OUTPUT}
 

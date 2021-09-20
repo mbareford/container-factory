@@ -16,3 +16,4 @@ ${SCRIPTS_SNG}/target.sh ${SCRIPTS_ROOT} ${PWD} ${APP} csd3 "/home/dc-bare2/cont
 ${SCRIPTS_SNG}/target_init.sh ${SCRIPTS_ROOT} ${PWD} ${APP} cirrus
 ${SCRIPTS_SNG}/target.sh ${SCRIPTS_ROOT} ${PWD} ${APP} cirrus "/lustre/home/z04/mrb/containers/build" "2021.1 mpt2-ib gcc10"
 ${SCRIPTS_SNG}/target.sh ${SCRIPTS_ROOT} ${PWD} ${APP} cirrus "/lustre/home/z04/mrb/containers/build" "2021.1 impi19-ib gcc10"
+${SCRIPTS_SNG}/target.sh ${SCRIPTS_ROOT} ${PWD} ${APP} cirrus "/lustre/home/z04/mrb/containers/build" "2021.1 ompi4-cuda-ib gcc10"

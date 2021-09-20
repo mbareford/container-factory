@@ -70,7 +70,7 @@ sed -i -e 's/LD_LIBRARY_PATH/export SINGULARITYENV_LD_LIBRARY_PATH/g' ${APP_RUN_
 
 # launch containerised app
 RUN_START=$(date +%s.%N)
-echo -e "Launching ${APP_EXE_NAME} (<insert further description>) over ${NNODES} node(s) from within Singularity container.\n" > ${APP_OUTPUT}
+echo -e "Launching ${APP_EXE_NAME} (<insert further description>) over ${NNODES} node(s) from within Singularity container(s).\n" > ${APP_OUTPUT}
 
 mpirun -n ${NCORES} -wdir ${APP_RUN_PATH} --hostfile ${APP_RUN_PATH}/hosts ${SINGULARITY_PATH} ${SINGULARITY_OPTS} ${CONTAINER_PATH} ${APP_EXE} ${APP_PARAMS} &>> ${APP_OUTPUT}
 

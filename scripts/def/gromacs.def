@@ -49,7 +49,7 @@ From: ubuntu:20.04
     This GROMACS (http://www.gromacs.org/) container image file was created at the EPCC Container Factory,
     an OpenStack Ubuntu 20.04 instance (ID 859596f3-6683-4951-82d4-f9e080c30d1f) hosted by the University of Edinburgh Eleanor Research Cloud.
 
-    The container is based on Ubuntu 20.04 and features GCC 10.0.1, Miniconda3 4.8.3, CMake 3.18.4 and the GROMACS source code version 2021.1.
+    The container is based on Ubuntu 20.04 and features GCC 10.3.0, Miniconda3 4.8.3, CMake 3.18.4 and the GROMACS source code version 2021.1.
     See the container creation log at "/opt/logs/create.log.0" and the original definition file at "/opt/scripts/def/gromacs.def".
 
     Submission script templates can be found under "/opt/scripts/app/gromacs/host/".

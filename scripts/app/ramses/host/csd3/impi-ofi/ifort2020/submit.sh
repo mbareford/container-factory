@@ -64,7 +64,7 @@ SINGULARITY_OPTS="exec --bind ${BIND_ARGS} --env-file ${APP_RUN_PATH}/env.sh"
 
 # launch containerised app
 RUN_START=$(date +%s.%N)
-echo -e "Launching ${APP_EXE_NAME} (<insert further description>) over ${NNODES} node(s) from within Singularity container.\n" > ${APP_OUTPUT}
+echo -e "Launching ${APP_EXE_NAME} (<insert further description>) over ${NNODES} node(s) from within Singularity container(s).\n" > ${APP_OUTPUT}
 
 mpirun -n ${NCORES} -wdir ${APP_RUN_PATH} -f ${APP_RUN_PATH}/hosts ${SINGULARITY_PATH} ${SINGULARITY_OPTS} ${CONTAINER_PATH} ${APP_EXE} ${APP_PARAMS} &>> ${APP_OUTPUT}
 
