@@ -20,7 +20,7 @@ This script will prompt you for your Active Directory (AD) password.
 . ./EPCC-ContainerFactory-openrc.sh
 ```
 
-The OpenStack Command Line Client can now be used to issue the command for instance creation. Note, the factory instance flavor (or spec) is given in the `[factory.yml](/scripts/fac/openstack/factory.yml)` file.
+The OpenStack Command Line Client can now be used to issue the command for instance creation. Note, the factory instance flavor (or spec) is given in the [factory yml file](/scripts/fac/openstack/factory.yml) file.
 
 ```bash
 openstack stack create -t factory.yml epcc-container-factory
