@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# bootstrap.sh 3.8.1 1.17
+# bootstrap.sh 3.8.3 1.17.1
 
 
 sudo apt-get -y update
