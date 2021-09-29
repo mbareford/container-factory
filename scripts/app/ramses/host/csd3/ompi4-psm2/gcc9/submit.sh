@@ -17,7 +17,6 @@
 module purge
 module load slurm
 module load openmpi/gcc/9.3/4.0.4
-module load gcc/9
 
 
 # setup resource-related environment

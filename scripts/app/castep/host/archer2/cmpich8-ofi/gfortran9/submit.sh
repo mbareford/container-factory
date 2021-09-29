@@ -14,12 +14,6 @@
 #SBATCH --export=none
 
 
-# load module environment
-module -s restore /etc/cray-pe.d/PrgEnv-gnu
-module -s swap gcc gcc/9.3.0
-module -s load cray-fftw/3.3.8.8
-
-
 # setup resource-related environment
 NNODES=${SLURM_JOB_NUM_NODES}
 NCORESPN=`expr ${SLURM_CPUS_ON_NODE} \/ 2`

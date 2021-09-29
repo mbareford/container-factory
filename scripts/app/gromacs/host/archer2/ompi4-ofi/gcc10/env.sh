@@ -1,5 +1,19 @@
 MPI_ROOT=/work/y07/shared/libs/openmpi/4.1.0-ofi-gcc10
 MPI_C_LIB=mpi
 MPI_CXX_LIB=mpi
-FFTW_ROOT=/opt/cray/pe/fftw/3.3.8.8/x86_rome
-LD_LIBRARY_PATH=${FFTW_ROOT}/lib:${MPI_ROOT}/lib:/opt/cray/pe/lib64:/opt/cray/libfabric/1.11.0.0.233/lib64:/opt/cray/xpmem/2.2.35-7.0.1.0_1.9__gd50fabf.shasta/lib64:/usr/lib64/host:/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu/libibverbs:/.singularity.d/libs
+MPI_LIBRARY_PATH=${MPI_ROOT}/lib/libmpi.so
+
+FFTW_ROOT=/opt/cray/pe/fftw/3.3.8.9/x86_rome
+
+MKL_ROOT=/work/y07/shared/libs/mkl/mkl-2021.2-2883/mkl/2021.2.0
+BLAS_LIBRARIES=${MKL_ROOT}/lib/intel64
+LAPACK_LIBRARIES=${BLAS_LIBRARIES}
+
+LD_LIBRARY_PATH=${FFTW_ROOT}/lib:${MKL_ROOT}/lib/intel64:${MPI_ROOT}/lib:/opt/cray/pe/lib64:/opt/cray/libfabric/1.11.0.0.233/lib64:/opt/cray/xpmem/2.2.35-7.0.1.0_1.12__gd50fabf.shasta/lib64:/usr/lib64/host:/usr/lib64/host/libibverbs:/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu/libibverbs:/.singularity.d/libs
+
+CC=gcc
+CXX=g++
+
+if [[ "${PATH}" != ?(*:)"${MPI_ROOT}/bin"?(:*) ]]; then
+  PATH=${MPI_ROOT}/bin:${PATH}
+fi

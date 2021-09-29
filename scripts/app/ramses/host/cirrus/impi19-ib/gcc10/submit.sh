@@ -15,7 +15,6 @@
 
 
 # load module environment
-module load gcc/8.2.0
 module load intel-mpi-19/19.0.0.117
 module load singularity/3.7.2
 

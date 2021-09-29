@@ -1,2 +1,8 @@
 MPI_ROOT=/opt/hpe/hpc/mpt/mpt-2.22
-LD_LIBRARY_PATH=${MPI_ROOT}/lib:/lustre/sw/pmi2/lib:/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu/libibverbs:/.singularity.d/libs
+PMI2_ROOT=/lustre/sw/pmi2
+
+LD_LIBRARY_PATH=${MPI_ROOT}/lib:${PMI2_ROOT}/lib:/lib/x86_64-linux-gnu/libibverbs-host:/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu/libibverbs:/.singularity.d/libs
+
+if [[ "${PATH}" != ?(*:)"${MPI_ROOT}/bin"?(:*) ]]; then
+  PATH=${MPI_ROOT}/bin:${PATH}
+fi

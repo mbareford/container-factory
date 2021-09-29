@@ -15,7 +15,6 @@
 
 
 # load module environment
-module load gcc/8.2.0
 module load mpt/2.22
 module load singularity/3.7.2
 

@@ -13,10 +13,6 @@
 #SBATCH --export=none
 
 
-# load module environment
-module -s restore /etc/cray-pe.d/PrgEnv-gnu
-
-
 # setup resource-related environment
 NNODES=${SLURM_JOB_NUM_NODES}
 NCORESPN=`expr ${SLURM_CPUS_ON_NODE} \/ 2`

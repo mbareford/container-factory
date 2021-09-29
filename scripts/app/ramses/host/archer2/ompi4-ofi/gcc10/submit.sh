@@ -14,7 +14,7 @@
 
 
 # load module environment
-module -s restore /etc/cray-pe.d/PrgEnv-gnu
+module use /work/y07/shared/archer2-modules/modulefiles-cse-other
 module -s load openmpi/4.1.0-ofi-gcc10
 
 
