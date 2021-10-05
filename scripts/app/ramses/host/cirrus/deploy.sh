@@ -13,13 +13,16 @@ singularity build --sandbox ${SIF}.sandbox ${SIF}
 echo ""
 
 echo "Copying mellanox drivers to container sandbox..."
-LIBIBVERBS_HOST_PATH=${SIF}.sandbox/lib/x86_64-linux-gnu/libibverbs-host
+LIBIBVERBS_HOST_PATH=${SIF}.sandbox/lib/x86_64-linux-gnu/libibverbs-${HOST}
 mkdir -p ${LIBIBVERBS_HOST_PATH}
-cp /lib64/libibcm* ${LIBIBVERBS_HOST_PATH}/
-cp /lib64/libibverbs* ${LIBIBVERBS_HOST_PATH}/
-cp /lib64/libmlx4* ${LIBIBVERBS_HOST_PATH}/
-cp /lib64/libmlx5* ${LIBIBVERBS_HOST_PATH}/
+cp /lib64/libib* ${LIBIBVERBS_HOST_PATH}/
+cp /lib64/libmlx* ${LIBIBVERBS_HOST_PATH}/
 cp /lib64/librdmacm* ${LIBIBVERBS_HOST_PATH}/
+cp /lib64/libosm* ${LIBIBVERBS_HOST_PATH}/
+cp /lib64/libnuma* ${LIBIBVERBS_HOST_PATH}/
+cp /lib64/liblustreapi* ${LIBIBVERBS_HOST_PATH}/
+cp /lib64/libnl-* ${LIBIBVERBS_HOST_PATH}/
+cp /lib64/librxe-* ${LIBIBVERBS_HOST_PATH}/
 echo ""
 
 echo "Building ${APP} within container sandbox..."

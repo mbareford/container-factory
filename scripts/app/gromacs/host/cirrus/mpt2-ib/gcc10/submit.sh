@@ -42,10 +42,6 @@ APP_OUTPUT=</path/to/output/file>
 # setup app run directory
 mkdir -p ${APP_RUN_PATH}
 
-# setup compute nodes file
-scontrol show hostnames > ${APP_RUN_PATH}/hosts
-chmod a+r ${APP_RUN_PATH}/hosts
-
 # setup singularity and container paths
 SINGULARITY_PATH=/opt/singularity/3.7.2/bin/singularity
 CONTAINER_PATH=${ROOT}/containers/${APP_NAME}/${APP_NAME}.sif

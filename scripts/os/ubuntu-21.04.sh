@@ -68,18 +68,6 @@ if [ ! -z "${1}" ]; then
 fi
 
 
-# install support for various interconnects (IB, Intel omni-path)
-# and comms libraries (UCX, PMI)
-apt-get -y install libibverbs-dev \
-                   opa-fm \
-                   opa-fastfabric \
-                   libpsm2-2 \
-                   libpsm2-2-compat \
-                   libpsm2-dev \
-                   libpmix-dev \
-                   libnuma-dev
-
-
 apt-get -y update
 apt-get -y upgrade
 apt-get -y dist-upgrade

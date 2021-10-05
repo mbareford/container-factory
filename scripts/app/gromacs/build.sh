@@ -10,7 +10,8 @@ NAME=${LABEL}-${VERSION}
 ROOT=/opt/app/${LABEL}
 HOST_PATH=${HOST}/${MPI_LABEL}/${COMPILER_LABEL}
 SCRIPTS_ROOT=/opt/scripts/app/${LABEL}/host/${HOST_PATH}
-BUILD_ROOT=${ROOT}/${NAME}
+CODE_ROOT=${ROOT}/${NAME}
+BUILD_ROOT=${ROOT}/build
 INSTALL_ROOT=${ROOT}/${VERSION}/${HOST_PATH}
 LOG_ROOT=/opt/logs
 CMAKE_PRELOAD=/lib/x86_64-linux-gnu/libssl.so.1.1:/lib/x86_64-linux-gnu/libcrypto.so.1.1
@@ -37,7 +38,7 @@ export FLAGS="-O3 -ftree-vectorize -funroll-loops"
 
 
 # build single precision
-BUILD_PATH=${BUILD_ROOT}/build/${HOST_PATH}/single
+BUILD_PATH=${BUILD_ROOT}/${HOST_PATH}/single
 rm -rf ${BUILD_PATH}
 mkdir -p ${BUILD_PATH}
 cd ${BUILD_PATH}
@@ -54,7 +55,7 @@ if [[ ${MPI_LABEL} == *"cuda"* ]]; then
 
   export FLAGS="${FLAGS} -I${MATHLIB}/targets/x86_64-linux/include"
 
-  LD_PRELOAD=${CMAKE_PRELOAD} cmake ${BUILD_ROOT} \
+  LD_PRELOAD=${CMAKE_PRELOAD} cmake ${CODE_ROOT} \
       -DGMX_MPI=ON -DGMX_OPENMP=ON -DGMX_HWLOC=OFF -DGMX_GPU=CUDA \
       -DGMX_X11=OFF -DGMX_DOUBLE=OFF -DGMX_BUILD_MDRUN_ONLY=ON -DGMX_BUILD_OWN_FFTW=ON \
       -DCMAKE_C_COMPILER=${CC} -DCMAKE_CXX_COMPILER=${CXX} \
@@ -70,7 +71,7 @@ if [[ ${MPI_LABEL} == *"cuda"* ]]; then
 
 else
 
-  LD_PRELOAD=${CMAKE_PRELOAD} cmake ${BUILD_ROOT} \
+  LD_PRELOAD=${CMAKE_PRELOAD} cmake ${CODE_ROOT} \
       -DGMX_MPI=ON -DGMX_OPENMP=ON -DGMX_HWLOC=OFF -DGMX_GPU=OFF \
       -DGMX_X11=OFF -DGMX_DOUBLE=OFF -DGMX_BUILD_MDRUN_ONLY=ON -DGMX_BUILD_OWN_FFTW=OFF \
       -DCMAKE_C_COMPILER=${CC} -DCMAKE_CXX_COMPILER=${CXX} \
@@ -90,12 +91,12 @@ LD_PRELOAD=${CMAKE_PRELOAD} make install &>> ${MAKE_LOG}
 
 if [[ ${MPI_LABEL} != *"cuda"* ]]; then
   # build double precision
-  BUILD_PATH=${BUILD_ROOT}/build/${HOST_PATH}/double
+  BUILD_PATH=${BUILD_ROOT}/${HOST_PATH}/double
   rm -rf ${BUILD_PATH}
   mkdir -p ${BUILD_PATH}
   cd ${BUILD_PATH}
 
-  LD_PRELOAD=${CMAKE_PRELOAD} cmake ${BUILD_ROOT} \
+  LD_PRELOAD=${CMAKE_PRELOAD} cmake ${CODE_ROOT} \
       -DGMX_MPI=ON -DGMX_OPENMP=ON -DGMX_HWLOC=OFF -DGMX_GPU=OFF \
       -DGMX_X11=OFF -DGMX_DOUBLE=ON -DGMX_BUILD_MDRUN_ONLY=ON -DGMX_BUILD_OWN_FFTW=OFF \
       -DCMAKE_C_COMPILER=${CC} -DCMAKE_CXX_COMPILER=${CXX} \

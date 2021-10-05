@@ -45,10 +45,6 @@ mkdir -p ${APP_RUN_PATH}
 # todo: setup run directory contents
 
 
-# setup compute nodes file
-scontrol show hostnames > ${APP_RUN_PATH}/hosts
-chmod a+r ${APP_RUN_PATH}/hosts
-
 # setup singularity and container paths
 SINGULARITY_PATH=/opt/singularity/3.7.2/bin/singularity
 CONTAINER_PATH=</path/to/container/image/file>

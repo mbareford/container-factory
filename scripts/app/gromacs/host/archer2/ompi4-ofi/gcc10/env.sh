@@ -9,7 +9,7 @@ MKL_ROOT=/work/y07/shared/libs/mkl/mkl-2021.2-2883/mkl/2021.2.0
 BLAS_LIBRARIES=${MKL_ROOT}/lib/intel64
 LAPACK_LIBRARIES=${BLAS_LIBRARIES}
 
-LD_LIBRARY_PATH=${FFTW_ROOT}/lib:${MKL_ROOT}/lib/intel64:${MPI_ROOT}/lib:/opt/cray/pe/lib64:/opt/cray/libfabric/1.11.0.0.233/lib64:/opt/cray/xpmem/2.2.35-7.0.1.0_1.12__gd50fabf.shasta/lib64:/usr/lib64/host:/usr/lib64/host/libibverbs:/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu/libibverbs:/.singularity.d/libs
+LD_LIBRARY_PATH=${FFTW_ROOT}/lib:${MKL_ROOT}/lib/intel64:${MPI_ROOT}/lib:/opt/cray/pe/lib64:/opt/cray/libfabric/1.11.0.0.233/lib64:/opt/cray/xpmem/2.2.35-7.0.1.0_1.12__gd50fabf.shasta/lib64:/usr/lib64/host:/usr/lib64/host/libibverbs:/lib/x86_64-linux-gnu:/.singularity.d/libs
 
 CC=gcc
 CXX=g++
