@@ -4,7 +4,7 @@ MPI_C_LIB=mpi
 MPI_CXX_LIB=mpi
 MPI_LIBRARY_PATH=${MPI_ROOT}/lib/libmpi.so
 
-FFTW_ROOT=/opt/cray/pe/fftw/3.3.8.9/x86_rome
+FFTW_ROOT=/opt/cray/pe/fftw/3.3.8.11/x86_rome
 
 # mkl not setup yet
 MKL_ROOT=/work/y07/shared/libs/mkl/mkl-2021.2-2883/mkl/2021.2.0
