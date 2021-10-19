@@ -54,12 +54,12 @@ CONTAINER_PATH=${ROOT}/containers/${APP_NAME}/${APP_NAME}.sif
 APP_SCRIPTS_ROOT=/opt/scripts/app/${APP_NAME}/host/${APP_HOST}
 BIND_ARGS=`singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/bindpaths.lst`
 BIND_ARGS=${BIND_ARGS},</path/to/input/data>
-SINGULARITY_OPTS="exec --nv --bind ${BIND_ARGS}"
 
 # setup singularity environment
 singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/env.sh > ${APP_RUN_PATH}/env.sh
-sed -i -e 's/LD_LIBRARY_PATH/export SINGULARITYENV_LD_LIBRARY_PATH/g' ${APP_RUN_PATH}/env.sh
-. ${APP_RUN_PATH}/env.sh
+
+# set singularity options
+SINGULARITY_OPTS="exec --bind ${BIND_ARGS} --env-file ${APP_RUN_PATH}/env.sh"
 
 
 # launch containerised app
