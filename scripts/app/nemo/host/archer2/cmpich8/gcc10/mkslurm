@@ -1,0 +1,188 @@
+#!/bin/ksh
+
+# set some defaults
+NSE=4
+NS_SP=8
+NS_PN=2
+NCL=28
+NC_SP=2
+TIM=02:00:00
+NAM=<job name>
+ACCT=<account code>
+NEMO_DIR=<path/to/nemo/exe>
+
+# allow command-line arguments to override defaults
+while getopts ":S:s:m:C:c:a:t:j:" opt; do
+ case $opt in
+   S ) NSE=$OPTARG
+;;
+   s ) NS_SP=$OPTARG
+;;
+   m ) NS_PN=$OPTARG
+;;
+   C ) NCL=$OPTARG
+;;
+   c ) NC_SP=$OPTARG
+;;
+   t ) TIM=$OPTARG
+;;
+   a ) ACCT=$OPTARG
+;;
+   j ) NAM=$OPTARG
+;;
+ \? ) print 'usage: mkslurm [-S num_servers] [-s server_spacing] [-m max_servers_per_node] [-C num_clients] [-c client_spacing][-t time_limit] [-a account] [-j job_name]' >&2
+      return 1
+ esac
+done
+shift $(($OPTIND - 1))
+
+echo "Running: mkslurm -S "$NSE" -s "$NS_SP" -m " $NS_PN" -C " $NCL" -c " $NC_SP" -t "$TIM" -a "$ACCT" -j "$NAM >&2
+
+nservers=$NSE
+ns_sparsity=$NS_SP
+max_servers_per_node=$NS_PN
+
+nclients=$NCL
+nc_sparsity=$NC_SP
+
+EXEC1=${XIOS_DIR}/bin/xios_server.exe
+EXEC2=${NEMO_DIR}/nemo
+
+set -A map $EXEC1 $EXEC2
+
+let cores_used=nservers+nclients
+let reserved_cores_needed=nservers*ns_sparsity+nclients*nc_sparsity
+let nodes_needed=reserved_cores_needed/128
+let reserved_cores=nodes_needed*128
+
+if test $reserved_cores -lt $reserved_cores_needed ; then
+  let nodes_needed=nodes_needed+1
+  let reserved_cores=nodes_needed*128
+fi
+
+echo "nodes needed= "$nodes_needed" ("$reserved_cores")" >&2
+echo "cores to be used= "$cores_used" ("$reserved_cores_needed")" >&2
+
+i=0
+nserv=0
+totnserv=0
+cpu=0
+
+while test $i -lt $cores_used
+do
+  if test $nserv -lt $max_servers_per_node && test $totnserv -lt $nservers ; then
+    ex[i]=0
+    let pl[i]=cpu
+    let cpu=cpu+ns_sparsity
+    let nserv=nserv+1
+    let totnserv=totnserv+1
+  else
+    ex[i]=1
+    let pl[i]=cpu
+    let cpu=cpu+nc_sparsity
+  fi
+  if test $cpu -gt 127 ; then
+   nserv=0
+   let cpu=cpu%128
+  fi
+  let i=i+1
+done
+
+index=0
+bstr="--cpu-bind=v,map_cpu:"
+while test $index -lt $cores_used
+do
+  #echo -n exec ${map[${ex[$index]}]} " : " ; printf "%2.2d %#02x %d\n" $index ${pl[$index]} ${pl[$index]}
+  c=$(printf "%#02x," ${pl[$index]})
+  bstr=$bstr$c
+  let index=index+1
+done
+
+
+# construct slurm script
+cat << EOFA
+#!/bin/bash --login
+
+#SBATCH -J sc_${NAM}
+#SBATCH -o /dev/null
+#SBATCH -e /dev/null
+#SBATCH --time=${TIM}
+#SBATCH --exclusive
+#SBATCH --nodes=${nodes_needed}
+#SBATCH --ntasks=${cores_used}
+#SBATCH --account=${ACCT}
+#SBATCH --partition=standard
+#SBATCH --qos=standard
+
+
+# Created by: mkslurm -S $NSE -s $NS_SP -m $NS_PN -C  $NCL -c  $NC_SP -t $TIM -a $ACCT -j $NAM
+
+
+# setup resource-related environment
+NNODES=\${SLURM_JOB_NUM_NODES}
+NCORESPN=`expr \${SLURM_CPUS_ON_NODE} \/ 2`
+NCORES=`expr \${NNODES} \* \${NCORESPN}`
+export OMP_NUM_THREADS=1
+
+
+# setup app-related environment
+# <add test case specific variables here>
+APP_NAME=nemo
+APP_VERSION=4.0.6
+APP_CONFIG=<config name>
+APP_HOST=archer2
+APP_MPI_LABEL=cmpich8
+APP_COMPILER_LABEL=gcc10
+APP_EXE_NAME=nemo
+APP_EXE_PATH=/opt/app/\${APP_NAME}/\${APP_VERSION}/\${APP_HOST}/\${APP_MPI_LABEL}/\${APP_COMPILER_LABEL}/\${APP_CONFIG}
+APP_RUN_PATH=</path/to/run/dir>
+APP_EXE=\${APP_EXE_PATH}/\${APP_EXE_NAME}
+APP_OUTPUT=</path/to/output/file>
+
+
+# setup app run directory
+mkdir -p \${APP_RUN_PATH}
+
+# set container path
+CONTAINER_PATH=\${ROOT}/containers/\${APP_NAME}/\${APP_NAME}.sif
+
+# setup singularity bindpaths
+APP_SCRIPTS_ROOT=/opt/scripts/app/\${APP_NAME}/host/\${APP_HOST}
+BIND_ARGS=`singularity exec \${CONTAINER_PATH} cat \${APP_SCRIPTS_ROOT}/bindpaths.lst`
+BIND_ARGS=\${BIND_ARGS},/var/spool/slurmd/mpi_cray_shasta,</path/to/input/data>
+SINGULARITY_OPTS="exec --bind \${BIND_ARGS} --env-file \${APP_RUN_PATH}/env.sh --home=\${APP_RUN_PATH}"
+
+# setup singularity environment
+singularity exec \${CONTAINER_PATH} cat \${APP_SCRIPTS_ROOT}/\${APP_MPI_LABEL}/\${APP_COMPILER_LABEL}/env.sh > \${APP_RUN_PATH}/env.sh
+
+# setup input files
+singularity exec \${SINGULARITY_OPTS} \${CONTAINER_PATH} /opt/scripts/app/\${APP_NAME}/cfg/\${APP_CONFIG}/pre_execute.sh \${APP_EXE_PATH} \${APP_RUN_PATH}
+
+
+# launch containerised app
+RUN_START=\$(date +%s.%N)
+echo -e "Launching \${APP_EXE_NAME} (\${APP_MPI_LABEL}-\${APP_COMPILER_LABEL}) for \${APP_CONFIG} over \${NNODES} node(s) from within Singularity container(s).\n" > \${APP_OUTPUT}
+
+#
+cat > myscript_wrapper2.sh << EOFB
+#!/bin/ksh
+#
+set -A map $EXEC1 $EXEC2
+exec_map=( ${ex[@]} )
+#
+exec \\\${map[\\\${exec_map[\\\$SLURM_PROCID]}]} 
+##
+EOFB
+chmod u+x ./myscript_wrapper2.sh
+#
+srun --mem-bind=local $bstr ./myscript_wrapper2.sh --chdir=${APP_RUN_PATH} singularity ${SINGULARITY_OPTS} ${CONTAINER_PATH} ${APP_EXE} &>> ${APP_OUTPUT}
+
+RUN_STOP=\$(date +%s.%N)
+RUN_TIME=\$(echo "\${RUN_STOP} - \${RUN_START}" | bc)
+echo -e "\nsrun time: \${RUN_TIME}" >> \${APP_OUTPUT}
+
+# tidy up
+mv \${APP_OUTPUT} \${APP_OUTPUT}\${SLURM_JOB_ID}
+mv \${APP_RESULTS} \${APP_RESULTS}.o\${SLURM_JOB_ID}
+# <insert any final clean up here>
+EOFA
