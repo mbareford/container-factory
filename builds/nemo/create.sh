@@ -44,6 +44,7 @@ mkdir -p ./scripts/app/${APP}
 cp ${SCRIPTS_APP}/source.sh ./scripts/app/${APP}/
 cp ${SCRIPTS_APP}/build.sh ./scripts/app/${APP}/
 cp -r ${SCRIPTS_APP}/host ./scripts/app/${APP}/
+cp -r ${SCRIPTS_APP}/cfg ./scripts/app/${APP}/
 
 tar -czf scripts.tar.gz ./scripts
 rm -rf scripts
