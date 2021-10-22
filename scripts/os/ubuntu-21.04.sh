@@ -74,3 +74,23 @@ apt-get -y dist-upgrade
 
 
 apt-get -y autoremove
+
+
+set_lib_link () {
+  LIB=$1
+  if [ ! -f ${LIB} ]; then
+    libfiles=($(ls -d ${LIB}.*))
+    for lf in "${libfiles[@]}"; do
+      ndots=`echo "${lf}" | tr -cd '.' | wc -c`
+      if [ $ndots -eq 2 ]; then
+        ln -sr ${lf} ${LIB}
+        break
+      fi
+    done
+  fi
+}
+
+set_lib_link "/lib/x86_64-linux-gnu/libcurl.so"
+set_lib_link "/lib/x86_64-linux-gnu/libgfortran.so"
+
+ln -sr /usr/bin/make /usr/bin/gmake

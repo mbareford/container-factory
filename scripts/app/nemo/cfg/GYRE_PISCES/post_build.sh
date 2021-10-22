@@ -25,11 +25,11 @@ replace_link () {
   cp ${SHARED_PATH}/${1} ${EXP00_PATH}/
 }
 
-replace_link("axis_def_nemo.xml")
-replace_link("domain_def_nemo.xml")
-replace_link("field_def_nemo-oce.xml")
-replace_link("field_def_nemo-pisces.xml")
-replace_link("grid_def_nemo.xml")
-replace_link("namelist_pisces_ref")
-replace_link("namelist_ref")
-replace_link("namelist_top_ref")
+replace_link "axis_def_nemo.xml"
+replace_link "domain_def_nemo.xml"
+replace_link "field_def_nemo-oce.xml"
+replace_link "field_def_nemo-pisces.xml"
+replace_link "grid_def_nemo.xml"
+replace_link "namelist_pisces_ref"
+replace_link "namelist_ref"
+replace_link "namelist_top_ref"
