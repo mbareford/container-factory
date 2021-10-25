@@ -4,7 +4,7 @@ NETCDF_LIB="-lnetcdf -lnetcdff"
 
 MPI_INCDIR="-I${MPI_DIR}/include"
 MPI_LIBDIR="-L${MPI_DIR}/lib"
-MPI_LIB="-lmpich"
+MPI_LIB="-lmpichf90"
 
 HDF5_INCDIR="-I${HDF5_DIR}/include"
 HDF5_LIBDIR="-L${HDF5_DIR}/lib"
