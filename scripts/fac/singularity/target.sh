@@ -6,7 +6,7 @@ IMG_PATH=$2
 APP=$3
 HOST=$4
 DEPLOY_PATH=$5
-DEPLOY_ARGS="${APP} ${DEPLOY_PATH}/${APP}.sif \"$6\""
+DEPLOY_ARGS="${APP} ${HOST} ${DEPLOY_PATH}/${APP}.sif \"$6\""
 
 DEPLOY_SCRIPT=${SCRIPTS_ROOT}/app/${APP}/host/${HOST}/deploy.sh
 

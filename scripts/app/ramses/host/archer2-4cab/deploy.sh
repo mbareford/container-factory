@@ -1,9 +1,9 @@
 #!/bin/bash
   
 APP=$1
-SIF=$2
-HOST=archer2
-BUILD_ARGS="${HOST} $3"
+HOST=$2
+SIF=$3
+BUILD_ARGS="${HOST} $4"
 BIND_ARGS=`singularity exec ${SIF} cat /opt/scripts/app/${APP}/host/${HOST}/bindpaths.lst`
 
 echo "Converting ${APP} container image to sandbox..."

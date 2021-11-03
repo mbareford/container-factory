@@ -3,9 +3,9 @@
 module load singularity/3.7.2
 
 APP=$1
-SIF=$2
-HOST=cirrus
-BUILD_ARGS="${HOST} $3"
+HOST=$2
+SIF=$3
+BUILD_ARGS="${HOST} $4"
 BIND_ARGS=`singularity exec ${SIF} cat /opt/scripts/app/${APP}/host/${HOST}/bindpaths.lst`
 
 echo "Converting ${APP} container image to sandbox..."
