@@ -1,0 +1,23 @@
+# Cray EX build instructions for XIOS/
+# These files have been tested on Archer2 (HPE Cray EX, AMD Zen2 7742) using
+# the GNU programming environment.
+%CCOMPILER      g++
+%FCOMPILER      gfortran
+%LINKER         gfortran
+
+%BASE_CFLAGS    -D__NONE__
+%PROD_CFLAGS    -O3 -DBOOST_DISABLE_ASSERTS -std=c++98 -lmpi_gnu_91
+%DEV_CFLAGS     -g -O2 -std=c++98 -lmpi_gnu_91
+%DEBUG_CFLAGS   -g -std=c++98
+
+%BASE_FFLAGS    -D__NONE__
+%PROD_FFLAGS    -O3 -lmpichf90
+%DEV_FFLAGS     -g -O2 -lmpichf90
+%DEBUG_FFLAGS   -g
+
+%BASE_INC       -D__NONE__
+%BASE_LD        -lstdc++
+
+%CPP            cpp
+%FPP            cpp -P
+%MAKE           gmake
