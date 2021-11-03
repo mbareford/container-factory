@@ -46,7 +46,7 @@ nclients=$NCL
 nc_sparsity=$NC_SP
 #
 EXEC1=/opt/cmp/xios/2.5/archer2/cmpich8/gcc10/bin/xios_server.exe
-EXEC2=/opt/app/nemo/4.0.6/archer2/cmpich8/gcc10/cfgs/GYRE_PISCES_CFG/bld/bin/nemo.exe
+EXEC2=/opt/app/nemo/4.0.6/archer2/cmpich8/gcc10/cfgs/GYRE_PISCES_CFG/bld/BLD/nemo.exe
 set -A map $EXEC1 $EXEC2
 #
 let cores_used=nservers+nclients
@@ -156,7 +156,7 @@ CONTAINER_PATH=\${ROOT}/containers/\${APP_NAME}/\${APP_NAME}.sif
 
 # setup singularity bindpaths
 APP_SCRIPTS_ROOT=/opt/scripts/app/\${APP_NAME}/host/\${APP_HOST}
-BIND_ARGS=`singularity exec \${CONTAINER_PATH} cat \${APP_SCRIPTS_ROOT}/bindpaths.lst`
+BIND_ARGS=\`singularity exec \${CONTAINER_PATH} cat \${APP_SCRIPTS_ROOT}/bindpaths.lst\`
 BIND_ARGS=\${BIND_ARGS},/var/spool/slurmd/mpi_cray_shasta,\${APP_RUN_ROOT}
 
 # setup singularity environment
@@ -173,7 +173,7 @@ RUN_START=\$(date +%s.%N)
 echo -e "Launching \${APP_EXE_NAME} in detached mode (\${APP_MPI_LABEL}-\${APP_COMPILER_LABEL}) \${CASE} (\${TEST}) over \${NNODES} node(s).\n" > \${APP_OUTPUT}
 
 #
-cat > myscript_wrapper2.sh << EOFB
+cat > \${APP_RUN_PATH}/myscript_wrapper2.sh << EOFB
 #!/bin/ksh
 #
 set -A map $EXEC1 $EXEC2
@@ -182,9 +182,9 @@ exec_map=( ${ex[@]} )
 exec \\\${map[\\\${exec_map[\\\$SLURM_PROCID]}]}
 ##
 EOFB
-chmod u+x ./myscript_wrapper2.sh
+chmod u+x \${APP_RUN_PATH}/myscript_wrapper2.sh
 #
-srun --mem-bind=local $bstr --chdir=\${APP_RUN_PATH} singularity \${SINGULARITY_OPTS} \${CONTAINER_PATH} ./myscript_wrapper2.sh &>> \${APP_OUTPUT}
+srun --mem-bind=local $bstr --chdir=\${APP_RUN_PATH} singularity \${SINGULARITY_OPTS} \${CONTAINER_PATH} \${APP_RUN_PATH}/myscript_wrapper2.sh &>> \${APP_OUTPUT}
 
 RUN_STOP=\$(date +%s.%N)
 RUN_TIME=\$(echo "\${RUN_STOP} - \${RUN_START}" | bc)
@@ -194,5 +194,5 @@ echo -e "\nsrun time: \${RUN_TIME}" >> \${APP_OUTPUT}
 # tidy up
 mv \${APP_OUTPUT} \${APP_OUTPUT}\${SLURM_JOB_ID}
 mv \${APP_RUN_PATH}/ocean.output \${APP_RUN_PATH}/ocean.o\${SLURM_JOB_ID}
-#. \${APP_RUN_ROOT}/\${CASE}/scripts/clean \${APP_RUN_PATH}
+. \${APP_RUN_ROOT}/\${CASE}/scripts/clean \${APP_RUN_PATH}
 EOFA
