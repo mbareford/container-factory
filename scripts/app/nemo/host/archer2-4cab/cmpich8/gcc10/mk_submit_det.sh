@@ -1,6 +1,6 @@
 #!/bin/ksh
 #
-# ./mk_submit_det.sh -S 64 -s 16 -m 2 -C 1536 -c 2 > sc_det_gcc10_cmpich8_ofi.ll
+# ./mk_submit_det.sh -S 64 -s 16 -m 2 -C 1536 -c 2 > sc_det_gcc10_cmpich8_ofi_n32.ll
 
 # set some defaults
 NSE=4
@@ -45,8 +45,8 @@ max_servers_per_node=$NS_PN
 nclients=$NCL
 nc_sparsity=$NC_SP
 #
-EXEC1=/opt/cmp/xios/2.5/archer2/cmpich8/gcc10/bin/xios_server.exe
-EXEC2=/opt/app/nemo/4.0.6/archer2/cmpich8/gcc10/cfgs/GYRE_PISCES_CFG/BLD/bin/nemo.exe
+EXEC1=/opt/cmp/xios/2.5/archer2-4cab/cmpich8/gcc10/bin/xios_server.exe
+EXEC2=/opt/app/nemo/4.0.6/archer2-4cab/cmpich8/gcc10/cfgs/GYRE_PISCES_CFG/BLD/bin/nemo.exe
 set -A map $EXEC1 $EXEC2
 #
 let cores_used=nservers+nclients
@@ -112,16 +112,18 @@ cat << EOFA
 # Created by: mk_submit_det.sh -S $NSE -s $NS_SP -m $NS_PN -C  $NCL -c  $NC_SP -t $TIM -a $ACCT -j $NAM
 
 
-module -s restore PrgEnv-gnu
+module -s restore /etc/cray-pe.d/PrgEnv-gnu
 module -s load cray-hdf5-parallel
 module -s load cray-netcdf-hdf5parallel
 module -s load cpe/21.03
-
-export LD_LIBRARY_PATH=\${CRAY_LD_LIBRARY_PATH}:\${LD_LIBRARY_PATH}
+module -s unload cpe/21.03
+module -s swap gcc gcc/10.2.0
 
 #module -s swap craype-network-ofi craype-network-ucx
 #module -s swap cray-mpich cray-mpich-ucx
 #module -s load libfabric
+
+export LD_LIBRARY_PATH=\${CRAY_LD_LIBRARY_PATH}:\${LD_LIBRARY_PATH}
 
 
 # setup resource-related environment
@@ -134,6 +136,7 @@ export OMP_NUM_THREADS=1
 # setup app-related environment
 CASE=GYRE_PISCES_CFG
 TEST=strong
+HOST=archer2-4cab
 ROOT=/work/z19/z19/mrb4cab
 APP_NAME=nemo
 APP_VERSION=4.0.6
@@ -142,10 +145,8 @@ APP_MPI_LABEL=cmpich8
 APP_COMMS_LABEL=ofi
 APP_COMPILER_LABEL=gcc10
 APP_XIOS_MODE=detached
-APP_EXE_ROOT=/opt/app/\${APP_NAME}
 APP_RUN_ROOT=\${ROOT}/tests/\${APP_NAME}
 APP_RUN_PATH=\${APP_RUN_ROOT}/\${CASE}/results/\${TEST}/sc/\${APP_XIOS_MODE}/\${APP_COMPILER_LABEL}/\${APP_MPI_LABEL}-\${APP_COMMS_LABEL}/n\${NNODES}
-APP_EXE=\${APP_EXE_ROOT}/\${APP_VERSION}/archer2/\${APP_COMPILER_LABEL}/\${APP_MPI_LABEL}/cfgs/\${CASE}/bld/bin/\${APP_EXE_NAME}
 APP_OUTPUT=\${APP_RUN_PATH}/\${APP_NAME}.o
 
 # setup app run directory
@@ -165,7 +166,8 @@ sed -i -e 's/LD_LIBRARY_PATH/SINGULARITYENV_LD_LIBRARY_PATH/g' \${APP_RUN_PATH}/
 . \${APP_RUN_PATH}/env.sh
 
 # setup input files
-singularity exec \${SINGULARITY_OPTS} \${CONTAINER_PATH} /opt/scripts/app/\${APP_NAME}/cfg/\${APP_CONFIG}/pre_execute.sh \${APP_EXE_PATH} \${APP_RUN_PATH}
+APP_INPUT_PATH=/opt/scripts/app/\${APP_NAME}/\${APP_VERSION}/\${HOST}/\${APP_MPI_LABEL}/\${APP_COMPILER_LABEL}/\${CASE}
+singularity exec \${SINGULARITY_OPTS} \${CONTAINER_PATH} /opt/scripts/app/\${APP_NAME}/cfg/\${APP_CONFIG}/pre_execute.sh \${APP_INPUT_PATH} \${APP_RUN_PATH}
 
 # set singularity options
 SINGULARITY_OPTS="exec --bind \${BIND_ARGS}"
