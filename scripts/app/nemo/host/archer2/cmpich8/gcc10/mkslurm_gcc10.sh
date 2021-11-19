@@ -1,6 +1,6 @@
 #!/bin/ksh
 #
-# ./mk_submit_det.sh -S 64 -s 16 -m 2 -C 1536 -c 2 > sc_det_gcc10_cmpich8_ofi_n32.ll
+# ./mkslurm_gcc10.sh -S 64 -s 16 -m 2 -C 1536 -c 2 > sc_det_gcc10_cmpich8_ofi_n32.ll
 
 # set some defaults
 NSE=4
@@ -32,12 +32,12 @@ while getopts ":S:s:m:C:c:a:t:j:" opt; do
 ;;
    j ) NAM=$OPTARG
 ;;
- \? ) print 'usage: mk_submit_det.sh [-S num_servers] [-s server_spacing] [-m max_servers_per_node] [-C num_clients] [-c client_spacing][-t time_limit] [-a account] [-j job_name]' >&2
+ \? ) print 'usage: mkslurm.sh [-S num_servers] [-s server_spacing] [-m max_servers_per_node] [-C num_clients] [-c client_spacing][-t time_limit] [-a account] [-j job_name]' >&2
       return 1
  esac
 done
 shift $(($OPTIND - 1))
-echo "Running: mk_submit_det.sh -S "$NSE" -s "$NS_SP" -m " $NS_PN" -C " $NCL" -c " $NC_SP" -t "$TIM" -a "$ACCT" -j "$NAM >&2
+echo "Running: mkslurm.sh -S "$NSE" -s "$NS_SP" -m " $NS_PN" -C " $NCL" -c " $NC_SP" -t "$TIM" -a "$ACCT" -j "$NAM >&2
 nservers=$NSE
 ns_sparsity=$NS_SP
 max_servers_per_node=$NS_PN
@@ -109,7 +109,7 @@ cat << EOFA
 #SBATCH --qos=standard
 
 
-# Created by: mk_submit_det.sh -S $NSE -s $NS_SP -m $NS_PN -C  $NCL -c  $NC_SP -t $TIM -a $ACCT -j $NAM
+# Created by: mkslurm_gcc10.sh -S $NSE -s $NS_SP -m $NS_PN -C  $NCL -c  $NC_SP -t $TIM -a $ACCT -j $NAM
 
 
 module -q load cpe/21.09
@@ -141,11 +141,11 @@ ROOT=/work/z19/z19/mrb23cab
 APP_NAME=nemo
 APP_VERSION=4.0.6
 APP_EXE_NAME=nemo.exe
+APP_HOST=archer2
 APP_MPI_LABEL=cmpich8
 APP_COMMS_LABEL=ofi
 APP_COMPILER_LABEL=gcc10
 APP_XIOS_MODE=detached
-APP_EXE_ROOT=/opt/app/\${APP_NAME}
 APP_RUN_ROOT=\${ROOT}/tests/\${APP_NAME}
 APP_RUN_PATH=\${APP_RUN_ROOT}/\${CASE}/results/\${TEST}/sc/\${APP_XIOS_MODE}/\${APP_COMPILER_LABEL}/\${APP_MPI_LABEL}-\${APP_COMMS_LABEL}/n\${NNODES}
 APP_OUTPUT=\${APP_RUN_PATH}/\${APP_NAME}.o
@@ -164,22 +164,27 @@ BIND_ARGS=\${BIND_ARGS},/var/spool/slurmd/mpi_cray_shasta,\${APP_RUN_ROOT}
 # setup singularity environment
 singularity exec \${CONTAINER_PATH} cat \${APP_SCRIPTS_ROOT}/\${APP_MPI_LABEL}/\${APP_COMPILER_LABEL}/env.sh > \${APP_RUN_PATH}/env.sh
 
-# setup input files
-APP_INPUT_PATH=/opt/scripts/app/\${APP_NAME}/\${APP_VERSION}/\${HOST}/\${APP_MPI_LABEL}/\${APP_COMPILER_LABEL}/\${CASE}
-singularity exec \${SINGULARITY_OPTS} \${CONTAINER_PATH} /opt/scripts/app/\${APP_NAME}/cfg/\${APP_CONFIG}/pre_execute.sh \${APP_INPUT_PATH} \${APP_RUN_PATH}
-
 # set singularity options
-SINGULARITY_OPTS="exec --bind \${BIND_ARGS} --env-file \${APP_RUN_PATH}/env.sh --home=\${APP_RUN_PATH}"
+SINGULARITY_OPTS="exec --bind \${BIND_ARGS} --env-file \${APP_RUN_PATH}/env.sh --home \${APP_RUN_PATH}"
+SINGULARITY_PRFX="singularity \${SINGULARITY_OPTS} \${CONTAINER_PATH}"
+
+# setup input files
+APP_INPUT_PATH=/opt/app/\${APP_NAME}/\${APP_VERSION}/\${APP_HOST}/\${APP_MPI_LABEL}/\${APP_COMPILER_LABEL}/cfgs/\${CASE}/EXP00
+\${SINGULARITY_PRFX} /opt/scripts/app/\${APP_NAME}/cfg/\${CASE}/pre_execute.sh \${APP_INPUT_PATH} \${APP_RUN_PATH}
+
+# adjust the "namelist_cfg" input file
+#sed -i "s:nn_itend    = 101:nn_itend    = 1001:g" \${APP_RUN_PATH}/namelist_cfg
+
 
 # run app
 RUN_START=\$(date +%s.%N)
-echo -e "Launching \${APP_EXE_NAME} in detached mode (\${APP_MPI_LABEL}-\${APP_COMPILER_LABEL}) \${CASE} (\${TEST}) over \${NNODES} node(s).\n" > \${APP_OUTPUT}
+echo -e "Launching \${APP_EXE_NAME} in detached mode (\${APP_MPI_LABEL}-\${APP_COMPILER_LABEL}) \${CASE} (\${TEST}) over \${NNODES} node(s) from within Singularity container.\n" > \${APP_OUTPUT}
 
 #
 cat > \${APP_RUN_PATH}/myscript_wrapper2.sh << EOFB
 #!/bin/ksh
 #
-set -A map $EXEC1 $EXEC2
+set -A map "\${SINGULARITY_PRFX} $EXEC1" "\${SINGULARITY_PRFX} $EXEC2"
 exec_map=( ${ex[@]} )
 #
 exec \\\${map[\\\${exec_map[\\\$SLURM_PROCID]}]}
@@ -187,7 +192,7 @@ exec \\\${map[\\\${exec_map[\\\$SLURM_PROCID]}]}
 EOFB
 chmod u+x \${APP_RUN_PATH}/myscript_wrapper2.sh
 #
-srun --mem-bind=local $bstr --chdir=\${APP_RUN_PATH} singularity \${SINGULARITY_OPTS} \${CONTAINER_PATH} \${APP_RUN_PATH}/myscript_wrapper2.sh &>> \${APP_OUTPUT}
+srun --mem-bind=local $bstr --chdir=\${APP_RUN_PATH} \${APP_RUN_PATH}/myscript_wrapper2.sh &>> \${APP_OUTPUT}
 
 RUN_STOP=\$(date +%s.%N)
 RUN_TIME=\$(echo "\${RUN_STOP} - \${RUN_START}" | bc)
@@ -195,7 +200,12 @@ echo -e "\nsrun time: \${RUN_TIME}" >> \${APP_OUTPUT}
 
 
 # tidy up
-mv \${APP_OUTPUT} \${APP_OUTPUT}\${SLURM_JOB_ID}
-mv \${APP_RUN_PATH}/ocean.output \${APP_RUN_PATH}/ocean.o\${SLURM_JOB_ID}
+mkdir \${APP_RUN_PATH}/\${SLURM_JOB_ID}
+mv \${APP_OUTPUT} \${APP_RUN_PATH}/\${SLURM_JOB_ID}/
+mv \${APP_RUN_PATH}/ocean.output \${APP_RUN_PATH}/\${SLURM_JOB_ID}/
+mv \${APP_RUN_PATH}/communication_report.txt \${APP_RUN_PATH}/\${SLURM_JOB_ID}/
+mv \${APP_RUN_PATH}/layout.dat \${APP_RUN_PATH}/\${SLURM_JOB_ID}/
+mv \${APP_RUN_PATH}/output.namelist.dyn \${APP_RUN_PATH}/\${SLURM_JOB_ID}/
+mv \${APP_RUN_PATH}/time.step \${APP_RUN_PATH}/\${SLURM_JOB_ID}/
 . \${APP_RUN_ROOT}/\${CASE}/scripts/clean \${APP_RUN_PATH}
 EOFA

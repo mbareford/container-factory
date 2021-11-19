@@ -29,10 +29,10 @@ APP_CONFIG=<config name>
 APP_HOST=archer2
 APP_MPI_LABEL=cmpich8
 APP_COMPILER_LABEL=gcc10
-APP_EXE_NAME=nemo
-APP_EXE_PATH=/opt/app/${APP_NAME}/${APP_VERSION}/${APP_HOST}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/${APP_CONFIG}
+APP_EXE_NAME=nemo.exe
+APP_CFG_PATH=/opt/app/${APP_NAME}/${APP_VERSION}/${APP_HOST}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/cfgs/${APP_CONFIG}
 APP_RUN_PATH=</path/to/run/dir>
-APP_EXE=${APP_EXE_PATH}/${APP_EXE_NAME}
+APP_EXE=${APP_CFG_PATH}/BLD/bin/${APP_EXE_NAME}
 APP_OUTPUT=</path/to/output/file>
 
 
@@ -50,11 +50,12 @@ BIND_ARGS=${BIND_ARGS},/var/spool/slurmd/mpi_cray_shasta,</path/to/input/data>
 # setup singularity environment
 singularity exec ${CONTAINER_PATH} cat ${APP_SCRIPTS_ROOT}/${APP_MPI_LABEL}/${APP_COMPILER_LABEL}/env.sh > ${APP_RUN_PATH}/env.sh
 
-# setup input files
-singularity exec ${SINGULARITY_OPTS} ${CONTAINER_PATH} /opt/scripts/app/${APP_NAME}/cfg/${APP_CONFIG}/pre_execute.sh ${APP_EXE_PATH} ${APP_RUN_PATH}
-
 # set singularity options
-SINGULARITY_OPTS="exec --bind ${BIND_ARGS} --env-file ${APP_RUN_PATH}/env.sh --home=${APP_RUN_PATH}"
+SINGULARITY_OPTS="exec --bind ${BIND_ARGS} --env-file ${APP_RUN_PATH}/env.sh --home ${APP_RUN_PATH}"
+
+# setup input files
+singularity exec ${SINGULARITY_OPTS} ${CONTAINER_PATH} /opt/scripts/app/${APP_NAME}/cfg/${APP_CONFIG}/pre_execute.sh ${APP_CFG_PATH}/EXP00 ${APP_RUN_PATH}
+
 
 # launch containerised app
 RUN_START=$(date +%s.%N)
