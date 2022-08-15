@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# bootstrap.sh 3.8.3 1.17.1
+# bootstrap.sh 3.10.2 1.19
 
 
 sudo apt-get -y update
@@ -27,17 +27,16 @@ sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf ${HOME}/arc/go/go${GO_VERSION}.linux-amd64.tar.gz
 export PATH=${PATH}:/usr/local/go/bin
 echo "export PATH=\${PATH}:/usr/local/go/bin" >> .bashrc
- 
+rm -rf ${HOME}/arc/go
+
 mkdir -p ${HOME}/singularity
-mkdir -p ${HOME}/arc/singularity
 cd ${HOME}/singularity
 rm -rf ${SINGULARITY_VERSION}
-wget https://github.com/sylabs/singularity/archive/refs/tags/v${SINGULARITY_VERSION}.tar.gz
-mv v${SINGULARITY_VERSION}.tar.gz ${HOME}/arc/singularity/singularity-${SINGULARITY_VERSION}.tar.gz
-tar -xzf ${HOME}/arc/singularity/singularity-${SINGULARITY_VERSION}.tar.gz
-mv singularity-${SINGULARITY_VERSION} ${SINGULARITY_VERSION}
+git clone --recurse-submodules https://github.com/sylabs/singularity.git
+mv singularity ${SINGULARITY_VERSION}
 cd ${SINGULARITY_VERSION}
-echo "$SINGULARITY_VERSION" > VERSION
+git checkout --recurse-submodules v${SINGULARITY_VERSION}
+echo "${SINGULARITY_VERSION}" > VERSION
 ./mconfig -V ${SINGULARITY_VERSION}
 make -C builddir
 sudo make -C builddir install

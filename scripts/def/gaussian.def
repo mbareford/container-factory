@@ -1,0 +1,46 @@
+Bootstrap: docker
+From: alvistack/rhel-7
+
+
+%setup
+    # empty
+
+%files
+    /home/ubuntu/work/scripts/post_start.sh /opt/
+    /home/ubuntu/work/scripts/post_stop.sh /opt/
+    /home/ubuntu/work/builds/gaussian/scripts.tar.gz /opt/
+
+%environment
+    # empty
+
+%post
+    . /opt/post_start.sh
+
+    rhel-7.9.sh
+
+    . /opt/post_stop.sh
+
+%runscript
+    # empty
+
+%startscript
+    # empty
+
+%test
+    ROOT=/opt/scripts
+    export PATH=${ROOT}/chk:${ROOT}/aux:${ROOT}/os:${PATH}
+    check_os.sh "Red Hat Enterprise Linux Server 7.9 (Maipo)"
+
+%labels
+    Author Michael Bareford
+    Email m.bareford@epcc.ed.ac.uk
+    Version v1.0.0
+
+%help
+    This Gaussian (https://gaussian.com/gaussian16/) container image file was created at the EPCC Container Factory,
+    an OpenStack Ubuntu 20.04 instance (ID 859596f3-6683-4951-82d4-f9e080c30d1f) hosted by the University of Edinburgh Eleanor Research Cloud.
+
+    The container is based on RHEL 7.9 and is intended for running Gaussian 16, which is provided by the "gaussian/16.A03" module located
+    on the Tier-2 Cirrus HPC.
+
+    See the container creation log at "/opt/logs/create.log.0" and the original definition file at "/opt/scripts/def/gaussview.def".
